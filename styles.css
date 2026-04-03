@@ -1285,16 +1285,14 @@ body {
 /* ─── Bottom Navigation (Glass Dock) ─── */
 .bottom-nav {
   position: fixed;
-  bottom: var(--space-5);
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% - var(--space-10));
-  max-width: 380px;
+  bottom: 0;
+  left: 0;
+  width: 100%;
   background: rgba(248, 249, 250, 0.82);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border-radius: var(--radius-xl);
-  padding: var(--space-2) var(--space-3);
+  border-top: 1px solid var(--surface-container-highest);
+  padding: var(--space-2) var(--space-3) calc(var(--space-2) + env(safe-area-inset-bottom, 0px));
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -2885,8 +2883,13 @@ body {
   transition: width 0.6s var(--ease-out);
 }
 
-/* Mobile: summary bar wraps tighter */
+/* Mobile enhancements */
 @media (max-width: 480px) {
+  .page {
+    padding: var(--space-4) var(--space-4);
+    padding-bottom: 120px;
+  }
+
   .ledger-summary-bar {
     gap: 0;
     padding: var(--space-3) var(--space-4);
@@ -2898,4 +2901,45 @@ body {
   .ledger-sort-wrap { width: 100%; }
   .ledger-sort-select { width: 100%; }
   .ledger-summary-value { font-size: 0.9375rem; }
+
+  /* Hero Card Mobile Responsiveness */
+  .hero-card {
+    padding: var(--space-5) var(--space-4) var(--space-4);
+  }
+  .hero-card .hero-amount {
+    font-size: 2.25rem;
+  }
+  .hero-pills {
+    padding: var(--space-3) var(--space-3);
+  }
+  .hero-pill-amount {
+    font-size: 0.875rem;
+  }
+  .hero-pill-divider {
+    margin: 0 var(--space-2);
+  }
+
+  /* Modern Date Widget Mobile Responsiveness */
+  .modern-date-widget {
+    padding: var(--space-4) var(--space-4);
+    gap: var(--space-4);
+  }
+  .greeting-date {
+    font-size: 1.25rem;
+  }
+  .horizon-calendar-wrap {
+    gap: var(--space-1);
+  }
+  .horizon-day {
+    padding: var(--space-2) 0;
+  }
+  .horizon-day-num {
+    font-size: 1rem;
+  }
+  .horizon-nav {
+    width: 32px;
+    height: 32px;
+  }
+
+
 }
