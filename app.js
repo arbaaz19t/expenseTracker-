@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════
    THE ATELIER — Application Logic
    Premium editorial expense tracker
-   ═══════════════════════════════════════════════════ */
+   ══════════════════════════════════════════════ */
 
 // ─── State ───
 let state = {
@@ -36,21 +36,8 @@ const categoryConfig = {
   Other:         { icon: '📦', cssClass: 'transport' }
 };
 
-// ─── Sample Data (seeded only when localStorage is empty) ───
-const sampleTransactions = [
-  { id: 1,  name: 'Starbucks',            category: 'Dining',    amount: 5.45,    type: 'expense', date: '2024-11-24', status: 'pending', notes: '' },
-  { id: 2,  name: 'Amazon',               category: 'Shopping',  amount: 124.99,  type: 'expense', date: '2024-11-23', status: 'cleared', notes: 'AirPods case' },
-  { id: 3,  name: 'Shell',                category: 'Transport', amount: 62.00,   type: 'expense', date: '2024-11-22', status: 'cleared', notes: '' },
-  { id: 4,  name: 'Salary Deposit',       category: 'Income',    amount: 4200.00, type: 'income',  date: '2024-11-21', status: 'cleared', notes: 'Monthly salary' },
-  { id: 5,  name: 'Equinox Gym',          category: 'Health',    amount: 185.00,  type: 'expense', date: '2024-11-20', status: 'cleared', notes: '' },
-  { id: 6,  name: 'Art Supplies Central', category: 'Shopping',  amount: 240.00,  type: 'expense', date: '2024-11-19', status: 'pending', notes: 'Studio materials' },
-  { id: 7,  name: 'The Glass Bistro',     category: 'Dining',    amount: 86.50,   type: 'expense', date: '2024-11-18', status: 'cleared', notes: 'Client meeting' },
-  { id: 8,  name: 'Invoice #8829',        category: 'Income',    amount: 1200.00, type: 'income',  date: '2024-11-17', status: 'cleared', notes: 'Service income' },
-  { id: 9,  name: 'Grid Utilities',       category: 'Bills',     amount: 154.20,  type: 'expense', date: '2024-11-16', status: 'cleared', notes: 'Monthly bill' },
-  { id: 10, name: 'Adobe Creative Cloud', category: 'Bills',     amount: 52.99,   type: 'expense', date: '2024-11-15', status: 'cleared', notes: 'Subscription' },
-  { id: 11, name: 'Rent Payment',         category: 'Bills',     amount: 1800.00, type: 'expense', date: '2024-11-14', status: 'cleared', notes: 'Monthly rent' },
-  { id: 12, name: 'Whole Foods',          category: 'Dining',    amount: 78.30,   type: 'expense', date: '2024-11-13', status: 'cleared', notes: '' },
-];
+// ─── Constants ───
+// Default empty list for transactions
 
 /* ═══════════════════════════════════════════════════
    LOCAL STORAGE — Persist & Restore All State
@@ -58,11 +45,11 @@ const sampleTransactions = [
 
 function saveState() {
   try {
-    localStorage.setItem('atelier_v2_transactions', JSON.stringify(state.transactions));
-    localStorage.setItem('atelier_v2_darkMode',     JSON.stringify(state.darkMode));
-    localStorage.setItem('atelier_v2_currency',     state.currency);
-    localStorage.setItem('atelier_v2_budget',       String(state.monthlyBudget));
-    localStorage.setItem('atelier_v2_settings',     JSON.stringify(state.settings));
+    localStorage.setItem('tracko_v3_transactions', JSON.stringify(state.transactions));
+    localStorage.setItem('tracko_v3_darkMode',     JSON.stringify(state.darkMode));
+    localStorage.setItem('tracko_v3_currency',     state.currency);
+    localStorage.setItem('tracko_v3_budget',       String(state.monthlyBudget));
+    localStorage.setItem('tracko_v3_settings',     JSON.stringify(state.settings));
   } catch (e) {
     console.warn('Could not save to localStorage:', e);
   }
@@ -70,22 +57,22 @@ function saveState() {
 
 function loadState() {
   try {
-    const txns = localStorage.getItem('atelier_v2_transactions');
+    const txns = localStorage.getItem('tracko_v3_transactions');
     if (txns) state.transactions = JSON.parse(txns);
 
-    const dark = localStorage.getItem('atelier_v2_darkMode');
+    const dark = localStorage.getItem('tracko_v3_darkMode');
     if (dark !== null) state.darkMode = JSON.parse(dark);
 
-    const cur = localStorage.getItem('atelier_v2_currency');
+    const cur = localStorage.getItem('tracko_v3_currency');
     if (cur && currencySymbols[cur]) state.currency = cur;
 
-    const budget = localStorage.getItem('atelier_v2_budget');
+    const budget = localStorage.getItem('tracko_v3_budget');
     if (budget) {
       const parsed = parseFloat(budget);
       if (!isNaN(parsed) && parsed > 0) state.monthlyBudget = parsed;
     }
 
-    const settings = localStorage.getItem('atelier_v2_settings');
+    const settings = localStorage.getItem('tracko_v3_settings');
     if (settings) state.settings = { ...state.settings, ...JSON.parse(settings) };
   } catch (e) {
     console.warn('Could not load from localStorage:', e);
@@ -98,12 +85,6 @@ function loadState() {
 
 function init() {
   loadState();
-
-  // Seed sample data only if storage was completely empty
-  if (state.transactions.length === 0) {
-    state.transactions = sampleTransactions;
-    saveState();
-  }
 
   applyTheme();
   renderAll();
@@ -194,6 +175,17 @@ function escapeHtml(str) {
     .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
+function getFinancialTotals(transactions) {
+  const totals = (transactions || []).reduce(function(acc, txn) {
+    if (txn.type === 'income') acc.income += txn.amount;
+    if (txn.type === 'expense') acc.expenses += txn.amount;
+    return acc;
+  }, { income: 0, expenses: 0 });
+
+  totals.balance = totals.income - totals.expenses;
+  return totals;
+}
+
 /* ═══════════════════════════════════════════════════
    RENDER: HOME
    ═══════════════════════════════════════════════════ */
@@ -202,40 +194,44 @@ function renderHome() {
   // Always render calendar at top
   renderModernCalendar(calOffset);
 
-  const income   = state.transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
-  const expenses = state.transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+  // ── Derive financial totals reactively ──
+  const totals   = getFinancialTotals(state.transactions);
+  const income   = totals.income;
+  const expenses = totals.expenses;
+  const balance  = totals.balance; // income - expenses
   const budget   = state.monthlyBudget || 0;
-  
-  // Calculate remaining balance based on starting budget + income - expenses
-  const balance  = budget + income - expenses;
 
-  // ── Hero card: Current Balance (Left Balance) ──
-  const balFormatted = formatCurrency(Math.abs(balance));
-  document.getElementById('totalNetWorth').textContent = (balance < 0 ? '-' : '') + balFormatted;
-  
+  // ── Hero card: Budget Left (budget - expenses) ──
+  // Hide the separate currency symbol span since formatCurrency includes it
   const heroSymbolEl = document.getElementById('heroSymbol');
   if (heroSymbolEl) heroSymbolEl.style.display = 'none';
 
-  document.getElementById('heroIncome').textContent    = formatCurrency(income);
-  document.getElementById('heroExpenses').textContent  = formatCurrency(expenses);
-
-  // Budget bar inside hero
   const budgetLeft = Math.max(0, budget - expenses);
+  const balEl = document.getElementById('totalNetWorth');
+  if (balEl) {
+    balEl.textContent = formatCurrency(budgetLeft);
+    balEl.style.color = '';
+  }
+
+  // ── Income / Expense pills ──
+  document.getElementById('heroIncome').textContent   = formatCurrency(income);
+  document.getElementById('heroExpenses').textContent = formatCurrency(expenses);
+
+  // ── Budget bar ──
   const usedPct    = budget > 0 ? Math.min((expenses / budget) * 100, 100) : 0;
   const fillEl     = document.getElementById('heroBudgetFill');
   const usedLabel  = document.getElementById('heroBudgetUsedLabel');
   const totalLabel = document.getElementById('heroBudgetTotalLabel');
-  
+
   if (fillEl) {
-    fillEl.style.width   = usedPct + '%';
-    fillEl.className     = 'hero-budget-fill' + (usedPct >= 90 ? ' danger' : usedPct >= 70 ? ' warning' : '');
+    fillEl.style.width = usedPct + '%';
+    fillEl.className   = 'hero-budget-fill' + (usedPct >= 90 ? ' danger' : usedPct >= 70 ? ' warning' : '');
   }
-  
-  if (usedLabel)  usedLabel.textContent     = formatCurrency(budgetLeft) + ' left';
-  if (totalLabel) totalLabel.textContent    = 'of ' + formatCurrency(budget) + ' budget';
+  if (usedLabel)  usedLabel.textContent  = formatCurrency(budgetLeft) + ' left';
+  if (totalLabel) totalLabel.textContent = 'of ' + formatCurrency(budget) + ' budget';
 
   // ── Stat card 1: Budget Left ──
-  const budgetPct  = budget > 0 ? Math.round((budgetLeft / budget) * 100) : 0;
+  const budgetPct = budget > 0 ? Math.round((budgetLeft / budget) * 100) : 0;
   document.getElementById('statBudgetLeft').textContent = formatCurrency(budgetLeft);
   document.getElementById('statBudgetPct').textContent  = budgetPct + '% of ' + formatCurrency(budget);
 
@@ -256,11 +252,11 @@ function renderHome() {
     document.getElementById('statBillAmount').textContent = formatCurrency(bill.amount);
     document.getElementById('statBillName').textContent   = bill.name;
   } else {
-    document.getElementById('statBillAmount').textContent = '—';
+    document.getElementById('statBillAmount').textContent = '\u2014';
     document.getElementById('statBillName').textContent   = 'No pending bills';
   }
 
-  // ── Top Spending by category (show amounts, not just counts) ──
+  // ── Top Spending by category ──
   const catSpend = {};
   state.transactions.filter(t => t.type === 'expense').forEach(t => {
     catSpend[t.category] = (catSpend[t.category] || 0) + t.amount;
@@ -280,14 +276,15 @@ function renderHome() {
           '<div class="chip-count">' + pctOfExpenses + '% of expenses</div>' +
           '</div>';
       }).join('')
-    : '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">📊</div><div class="empty-title">No expenses yet</div></div>';
+    : '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">\ud83d\udcca</div><div class="empty-title">No expenses yet</div></div>';
 
   // ── Recent Transactions (latest 5) ──
   const recent = [...state.transactions].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
   document.getElementById('recentTransactions').innerHTML = recent.length
     ? recent.map(t => renderTransactionItem(t, true)).join('')
-    : '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No transactions yet</div><div class="empty-desc">Tap + to add your first entry.</div></div>';
+    : '<div class="empty-state"><div class="empty-icon">\ud83d\udced</div><div class="empty-title">No transactions yet</div><div class="empty-desc">Tap + to add your first entry.</div></div>';
 }
+
 
 /* ═══════════════════════════════════════════════════
    RENDER: TRANSACTION ITEM
@@ -363,7 +360,10 @@ function renderLedger() {
   document.getElementById('ledgerTotalIncome').textContent  = formatCurrency(filteredIncome);
   document.getElementById('ledgerTotalExpense').textContent = formatCurrency(filteredExpenses);
   var netEl = document.getElementById('ledgerNetBalance');
-  netEl.textContent = formatCurrency(Math.abs(filteredNet));
+  // Balance = Total Income - Total Expenses (show negative when expenses exceed income)
+  var netSign = filteredNet < 0 ? '-' : '';
+  var netAmount = Math.abs(filteredNet);
+  netEl.textContent = netSign + formatCurrency(netAmount);
   netEl.className   = 'ledger-summary-value ' + (filteredNet >= 0 ? 'ledger-summary-income' : 'ledger-summary-expense');
   document.getElementById('ledgerTxnCount').textContent = list.length;
 
@@ -511,60 +511,97 @@ function renderInsights() {
   const totalSpent  = expenseTxns.reduce((s, t) => s + t.amount, 0);
   const budget      = state.monthlyBudget;
   const remaining   = Math.max(0, budget - totalSpent);
-  const pct         = budget > 0 ? Math.min(totalSpent / budget, 1) : 0;
 
-  // Budget ring
+  const budgetRemainingEl = document.getElementById('budgetRemaining');
+  if (budgetRemainingEl) {
+    budgetRemainingEl.innerHTML = 'You have <strong>' + formatCurrency(remaining) + '</strong> remaining this month.';
+  }
+
+  // Budget Ring Math
+  const pct = budget > 0 ? Math.min(totalSpent / budget, 1) : 0;
   const circumference = 2 * Math.PI * 52;
   const offset = circumference * (1 - pct);
+
   const ring = document.getElementById('budgetRingFill');
-  if (ring) setTimeout(function() { ring.style.strokeDashoffset = offset; }, 100);
+  if (ring) {
+    setTimeout(function() { ring.style.strokeDashoffset = offset; }, 100);
+  }
 
-  document.getElementById('budgetSpent').textContent   = formatCurrency(totalSpent);
-  document.getElementById('budgetTotal').textContent   = 'of ' + formatCurrency(budget);
-  document.getElementById('budgetRemaining').innerHTML =
-    'You have <strong>' + formatCurrency(remaining) + '</strong> remaining this month.';
+  const budgetSpentEl = document.getElementById('budgetSpent');
+  if (budgetSpentEl) budgetSpentEl.textContent = formatCurrency(totalSpent);
 
-  // Spending Breakdown
+  const budgetTotalEl = document.getElementById('budgetTotal');
+  if (budgetTotalEl) budgetTotalEl.textContent = 'of ' + formatCurrency(budget);
+
+  // --- Process Category Data (Bar Chart) ---
   const catSpend = {};
   expenseTxns.forEach(t => { catSpend[t.category] = (catSpend[t.category] || 0) + t.amount; });
+  const sortedCats = Object.entries(catSpend).sort((a, b) => b[1] - a[1]).slice(0, 6);
 
-  const sortedCats = Object.entries(catSpend).sort((a, b) => b[1] - a[1]);
-  const maxSpend   = sortedCats.length > 0 ? sortedCats[0][1] : 1;
-  const fills      = ['primary-fill', 'secondary-fill', 'tertiary-fill', 'error-fill'];
+  const catCtx = document.getElementById('categoryChart');
+  if (!catCtx) return;
 
-  document.getElementById('spendingBreakdown').innerHTML = sortedCats.length
-    ? sortedCats.map(function(entry, i) {
-        var cat = entry[0], amount = entry[1];
-        var widthPct = (amount / maxSpend) * 100;
-        return '<div class="spending-bar-item">' +
-          '<div class="spending-bar-header">' +
-            '<span class="spending-bar-label">' + cat + '</span>' +
-            '<span class="spending-bar-value">' + formatCurrency(amount) + '</span>' +
-          '</div>' +
-          '<div class="spending-bar-track">' +
-            '<div class="spending-bar-fill ' + fills[i % fills.length] + '" style="width:' + widthPct + '%"></div>' +
-          '</div></div>';
-      }).join('')
-    : '<div class="empty-state"><div class="empty-icon">📊</div><div class="empty-title">No expenses yet</div></div>';
+  // Destroy previous chart instance to avoid "Canvas already in use" error
+  if (window.categoryChartInst) {
+    window.categoryChartInst.destroy();
+    window.categoryChartInst = null;
+  }
 
-  // Active Budgets
-  const budgetAllocations = { Bills: 0.55, Dining: 0.20, Shopping: 0.15, Transport: 0.10 };
-  document.getElementById('activeBudgets').innerHTML = Object.entries(budgetAllocations).map(function(entry) {
-    var cat = entry[0], ratio = entry[1];
-    var catBudget = budget * ratio;
-    var spent     = catSpend[cat] || 0;
-    var fillPct   = catBudget > 0 ? Math.min((spent / catBudget) * 100, 100) : 0;
-    var fillClass = fillPct > 90 ? 'danger' : fillPct > 70 ? 'warning' : 'safe';
-    return '<div class="budget-item">' +
-      '<div class="budget-item-header">' +
-        '<span class="budget-item-name">' + cat + '</span>' +
-        '<span class="budget-item-amount">' + formatCurrency(spent) + ' of ' + formatCurrency(catBudget) + '</span>' +
-      '</div>' +
-      '<div class="budget-item-bar">' +
-        '<div class="budget-item-fill ' + fillClass + '" style="width:' + fillPct + '%"></div>' +
-      '</div></div>';
-  }).join('');
+  // Show empty state if no expense data
+  if (sortedCats.length === 0) {
+    const container = catCtx.parentElement;
+    catCtx.style.display = 'none';
+    if (!container.querySelector('.chart-empty')) {
+      const empty = document.createElement('div');
+      empty.className = 'chart-empty empty-state';
+      empty.innerHTML = '<div class="empty-icon">📊</div><div class="empty-title">No expense data yet</div><div class="empty-desc">Add some expenses to see the breakdown.</div>';
+      container.appendChild(empty);
+    }
+    return;
+  }
+
+  // Show canvas (in case it was hidden before)
+  catCtx.style.display = '';
+  const existingEmpty = catCtx.parentElement.querySelector('.chart-empty');
+  if (existingEmpty) existingEmpty.remove();
+
+  // Read real colors from CSS variables at render time
+  const style      = getComputedStyle(document.documentElement);
+  const accentColor = style.getPropertyValue('--primary').trim() || '#4a4bd7';
+  const labelColor  = style.getPropertyValue('--on-surface-variant').trim() || '#5a6062';
+  const gridColor   = style.getPropertyValue('--surface-container-high').trim() || '#e5e9eb';
+
+  window.categoryChartInst = new Chart(catCtx, {
+    type: 'bar',
+    data: {
+      labels: sortedCats.map(c => c[0]),
+      datasets: [{
+        label: 'Spent',
+        data: sortedCats.map(c => c[1]),
+        backgroundColor: accentColor,
+        borderRadius: 6,
+        barThickness: 28
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) { return ' ' + formatCurrency(ctx.raw); }
+          }
+        }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: labelColor } },
+        y: { grid: { color: gridColor }, ticks: { color: labelColor, callback: function(v) { return formatCurrency(v); } }, beginAtZero: true }
+      }
+    }
+  });
 }
+
 
 /* ═══════════════════════════════════════════════════
    RENDER: STUDIO (Settings)
@@ -652,9 +689,7 @@ function openAddExpense() {
   modal.style.display = 'flex';
   requestAnimationFrame(function() { modal.classList.add('show'); });
   document.body.style.overflow = 'hidden';
-  document.getElementById('expenseForm').reset();
-  setExpenseType('expense');
-  setDateDefault();
+  resetExpenseForm();
   syncCurrencyPrefixes();
 }
 
@@ -685,6 +720,22 @@ function setDateDefault() {
   if (el) el.value = new Date().toISOString().split('T')[0];
 }
 
+function resetExpenseForm() {
+  const form = document.getElementById('expenseForm');
+  if (!form) return;
+
+  // Explicitly clear all form input fields
+  document.getElementById('expenseAmount').value = '';
+  document.getElementById('expenseName').value = '';
+  document.getElementById('expenseCategory').value = '';
+  document.getElementById('expenseNotes').value = '';
+  
+  // Reset type and date
+  state.expenseType = 'expense';
+  setExpenseType('expense');
+  setDateDefault();
+}
+
 function handleAddExpense(e) {
   e.preventDefault();
 
@@ -707,11 +758,29 @@ function handleAddExpense(e) {
     notes
   };
 
+  // 1. Add transaction to state and persist
   state.transactions.unshift(newTxn);
   saveState();
-  renderAll();
+
+  // 2. Reset form using form.reset() — clears all native inputs in one call
+  const form = document.getElementById('expenseForm');
+  if (form) form.reset();
+
+  // Also reset internal type/date state back to defaults
+  state.expenseType = 'expense';
+  setExpenseType('expense');
+  setDateDefault();
+
+  // 3. Close modal
   closeAddExpense();
-  showToast((state.expenseType === 'income' ? 'Income' : 'Expense') + ' added: ' + formatCurrency(amount));
+
+  // 4. Recalculate balance (income - expenses) and update entire UI
+  const totals = getFinancialTotals(state.transactions);
+  // totals.balance = totals.income - totals.expenses (already computed inside helper)
+  renderAll(); // re-renders home balance, ledger net, insights, studio
+
+  // 5. Show confirmation toast
+  showToast((newTxn.type === 'income' ? 'Income' : 'Expense') + ' added: ' + formatCurrency(amount));
 }
 
 /* ═══════════════════════════════════════════════════
@@ -755,11 +824,25 @@ function saveBudget(e) {
   e.preventDefault();
   const val = parseFloat(document.getElementById('budgetInput').value);
   if (!val || val <= 0) return;
+
+  // 1. Save new budget to state and persist
   state.monthlyBudget = val;
   saveState();
-  renderAll();
+
+  // 2. Reset form using form.reset() — clears the budget input field
+  const budgetForm = document.getElementById('budgetForm');
+  if (budgetForm) budgetForm.reset();
+
+  // 3. Close modal
   closeBudgetModal();
-  showToast('Budget set to ' + formatCurrency(val));
+
+  // 4. Recalculate balance (income - expenses) and update entire UI
+  const totals = getFinancialTotals(state.transactions);
+  // totals.balance = totals.income - totals.expenses (derived reactively)
+  renderAll(); // re-renders home balance bar, insights ring, studio budget desc
+
+  // 5. Show confirmation toast
+  showToast('Budget updated to ' + formatCurrency(val));
 }
 
 /* ═══════════════════════════════════════════════════

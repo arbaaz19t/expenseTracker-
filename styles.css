@@ -1004,6 +1004,15 @@ body {
   text-align: center;
 }
 
+.budget-ring-tag {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  color: var(--on-surface-variant);
+  margin-bottom: var(--space-1);
+}
+
 .budget-ring-amount {
   font-size: 1.75rem;
   font-weight: 700;
@@ -1038,110 +1047,22 @@ body {
   gap: var(--space-2);
 }
 
-.spending-bar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.spending-bar-label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--on-surface);
-}
-
-.spending-bar-value {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--on-surface);
-}
-
-.spending-bar-track {
-  width: 100%;
-  height: 8px;
-  background: var(--surface-container-high);
-  border-radius: var(--radius-full);
-  overflow: hidden;
-}
-
-.spending-bar-fill {
-  height: 100%;
-  border-radius: var(--radius-full);
-  transition: width 1s var(--ease-out);
-}
-
-.spending-bar-fill.primary-fill {
-  background: linear-gradient(90deg, var(--primary), var(--primary-container));
-}
-
-.spending-bar-fill.secondary-fill {
-  background: linear-gradient(90deg, var(--secondary), var(--secondary-container));
-}
-
-.spending-bar-fill.tertiary-fill {
-  background: linear-gradient(90deg, var(--tertiary), var(--tertiary-container));
-}
-
-.spending-bar-fill.error-fill {
-  background: linear-gradient(90deg, var(--error), var(--error-container));
-}
-
-/* ─── Active Budgets ─── */
-.budget-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-
-.budget-item {
+/* ─── Dashboard Chart Cards ─── */
+.chart-card {
   background: var(--surface-container-lowest);
-  border-radius: var(--radius-lg);
-  padding: var(--space-4) var(--space-5);
-}
-
-.budget-item-header {
+  border-radius: var(--radius-xl);
+  padding: var(--space-4) var(--space-3);
+  box-shadow: var(--shadow-ambient);
+  margin-bottom: var(--space-6);
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  margin-bottom: var(--space-2);
 }
 
-.budget-item-name {
-  font-size: 0.9375rem;
-  font-weight: 500;
-  color: var(--on-surface);
-}
-
-.budget-item-amount {
-  font-size: 0.8125rem;
-  color: var(--on-surface-variant);
-}
-
-.budget-item-bar {
+.chart-container {
   width: 100%;
-  height: 6px;
-  background: var(--surface-container-high);
-  border-radius: var(--radius-full);
-  overflow: hidden;
 }
 
-.budget-item-fill {
-  height: 100%;
-  border-radius: var(--radius-full);
-  transition: width 1s var(--ease-out);
-}
-
-.budget-item-fill.safe {
-  background: linear-gradient(90deg, var(--secondary), var(--secondary-container));
-}
-
-.budget-item-fill.warning {
-  background: linear-gradient(90deg, #e6a817, #f0c040);
-}
-
-.budget-item-fill.danger {
-  background: linear-gradient(90deg, var(--error), var(--error-container));
-}
 
 /* ─── Settings ─── */
 .settings-section {

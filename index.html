@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="The Atelier — A premium editorial-style expense tracker for managing your finances with elegance.">
+  <meta name="description"
+    content="The Atelier — A premium editorial-style expense tracker for managing your finances with elegance.">
   <title>Tracko | Financial Gallery</title>
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 
@@ -57,381 +61,380 @@
     <!-- ═══════════════════════════════════════════ -->
     <div class="main-content" id="mainContent">
 
-    <!-- ═══════════════════════════════════════════ -->
-    <!-- HOME (Atelier)                              -->
-    <!-- ═══════════════════════════════════════════ -->
-    <div class="page active" id="page-home" data-page="home">
-      <div class="page-header">
-        <div class="app-title">Tracko</div>
-      </div>
-
-      <!-- ══ MODERN DATE SECTION ══ -->
-      <div class="modern-date-widget">
-        <div class="date-header">
-          <div class="greeting-wrap">
-            <h1 class="greeting-title" id="greetingTitle">Good morning,</h1>
-            <p class="greeting-date" id="greetingDate">Loading...</p>
-          </div>
-          <button class="today-badge" onclick="renderModernCalendar(0)">Today</button>
+      <!-- ═══════════════════════════════════════════ -->
+      <!-- HOME (Atelier)                              -->
+      <!-- ═══════════════════════════════════════════ -->
+      <div class="page active" id="page-home" data-page="home">
+        <div class="page-header">
+          <div class="app-title">Tracko</div>
         </div>
-        <div class="horizon-calendar-wrap">
-          <button class="horizon-nav" onclick="shiftHorizon(-1)"><span class="material-symbols-rounded">chevron_left</span></button>
-          <div class="horizon-calendar" id="horizonCalendar"></div>
-          <button class="horizon-nav" onclick="shiftHorizon(1)"><span class="material-symbols-rounded">chevron_right</span></button>
-        </div>
-      </div>
 
-      <!-- ══ HERO BALANCE CARD ══ -->
-      <div class="dashboard-top-row">
-        <div class="hero-card" id="heroCard">
-
-          <!-- Label + greeting -->
-          <div class="hero-label">Current Balance </div>
-
-          <!-- Main balance amount -->
-          <div class="hero-amount">
-            <span class="currency" id="heroSymbol">$</span><span id="totalNetWorth">0.00</span>
+        <!-- ══ MODERN DATE SECTION ══ -->
+        <div class="modern-date-widget">
+          <div class="date-header">
+            <div class="greeting-wrap">
+              <h1 class="greeting-title" id="greetingTitle">Good morning,</h1>
+              <p class="greeting-date" id="greetingDate">Loading...</p>
+            </div>
+            <button class="today-badge" onclick="renderModernCalendar(0)">Today</button>
           </div>
+          <div class="horizon-calendar-wrap">
+            <button class="horizon-nav" onclick="shiftHorizon(-1)"><span
+                class="material-symbols-rounded">chevron_left</span></button>
+            <div class="horizon-calendar" id="horizonCalendar"></div>
+            <button class="horizon-nav" onclick="shiftHorizon(1)"><span
+                class="material-symbols-rounded">chevron_right</span></button>
+          </div>
+        </div>
 
-          <!-- Income / Expense pill row -->
-          <div class="hero-pills">
-            <div class="hero-pill hero-pill--income">
-              <span class="material-symbols-rounded">arrow_downward</span>
-              <div>
-                <div class="hero-pill-label">Income</div>
-                <div class="hero-pill-amount" id="heroIncome">$0.00</div>
+        <!-- ══ HERO BALANCE CARD ══ -->
+        <div class="dashboard-top-row">
+          <div class="hero-card" id="heroCard">
+
+            <!-- Label -->
+            <div class="hero-label">Current Balance</div>
+
+            <!-- Main balance amount — updated by JS after every transaction -->
+            <div class="hero-amount">
+              <span class="currency" id="heroSymbol">$</span><span id="totalNetWorth">0.00</span>
+            </div>
+
+            <!-- Income / Expense pill row -->
+            <div class="hero-pills">
+              <div class="hero-pill hero-pill--income">
+                <span class="material-symbols-rounded">arrow_downward</span>
+                <div>
+                  <div class="hero-pill-label">Income</div>
+                  <div class="hero-pill-amount" id="heroIncome">$0.00</div>
+                </div>
+              </div>
+              <div class="hero-pill-divider"></div>
+              <div class="hero-pill hero-pill--expense">
+                <span class="material-symbols-rounded">arrow_upward</span>
+                <div>
+                  <div class="hero-pill-label">Expenses</div>
+                  <div class="hero-pill-amount" id="heroExpenses">$0.00</div>
+                </div>
               </div>
             </div>
-            <div class="hero-pill-divider"></div>
-            <div class="hero-pill hero-pill--expense">
-              <span class="material-symbols-rounded">arrow_upward</span>
-              <div>
-                <div class="hero-pill-label">Expenses</div>
-                <div class="hero-pill-amount" id="heroExpenses">$0.00</div>
+
+            <!-- Budget progress bar -->
+            <div class="hero-budget-bar-wrap">
+              <div class="hero-budget-bar-labels">
+                <span id="heroBudgetUsedLabel">$0 left</span>
+                <span id="heroBudgetTotalLabel">of $0 budget</span>
+              </div>
+              <div class="hero-budget-track">
+                <div class="hero-budget-fill" id="heroBudgetFill" style="width: 0%"></div>
               </div>
             </div>
+
           </div>
 
-          <!-- Budget progress bar -->
-          <div class="hero-budget-bar-wrap">
-            <div class="hero-budget-bar-labels">
-              <span id="heroBudgetUsedLabel">$0 spent</span>
-              <span id="heroBudgetTotalLabel">of $0 budget</span>
+          <!-- ── QUICK STAT CARDS ── -->
+          <div class="info-cards-row" id="homeInfoCards">
+
+            <!-- Budget left this month -->
+            <div class="stat-card">
+              <div class="stat-card-icon stat-icon-budget">
+                <span class="material-symbols-rounded">account_balance_wallet</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-card-label">Budget Left</div>
+                <div class="stat-card-value" id="statBudgetLeft">$0</div>
+                <div class="stat-card-sub" id="statBudgetPct">of $0 this month</div>
+              </div>
             </div>
-            <div class="hero-budget-track">
-              <div class="hero-budget-fill" id="heroBudgetFill" style="width: 0%"></div>
+
+            <!-- Spent this week -->
+            <div class="stat-card">
+              <div class="stat-card-icon stat-icon-week">
+                <span class="material-symbols-rounded">calendar_today</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-card-label">Spent This Week</div>
+                <div class="stat-card-value" id="statWeekSpend">$0</div>
+                <div class="stat-card-sub" id="statWeekCount">0 transactions</div>
+              </div>
             </div>
-          </div>
 
-        </div>
-
-        <!-- ── QUICK STAT CARDS ── -->
-        <div class="info-cards-row" id="homeInfoCards">
-
-          <!-- Budget left this month -->
-          <div class="stat-card">
-            <div class="stat-card-icon stat-icon-budget">
-              <span class="material-symbols-rounded">account_balance_wallet</span>
+            <!-- Next pending bill -->
+            <div class="stat-card">
+              <div class="stat-card-icon stat-icon-bill">
+                <span class="material-symbols-rounded">receipt_long</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-card-label">Pending Bill</div>
+                <div class="stat-card-value" id="statBillAmount">—</div>
+                <div class="stat-card-sub" id="statBillName">No pending bills</div>
+              </div>
             </div>
-            <div class="stat-card-body">
-              <div class="stat-card-label">Budget Left</div>
-              <div class="stat-card-value" id="statBudgetLeft">$0</div>
-              <div class="stat-card-sub" id="statBudgetPct">of $0 this month</div>
-            </div>
-          </div>
 
-          <!-- Spent this week -->
-          <div class="stat-card">
-            <div class="stat-card-icon stat-icon-week">
-              <span class="material-symbols-rounded">calendar_today</span>
-            </div>
-            <div class="stat-card-body">
-              <div class="stat-card-label">Spent This Week</div>
-              <div class="stat-card-value" id="statWeekSpend">$0</div>
-              <div class="stat-card-sub" id="statWeekCount">0 transactions</div>
-            </div>
-          </div>
-
-          <!-- Next pending bill -->
-          <div class="stat-card">
-            <div class="stat-card-icon stat-icon-bill">
-              <span class="material-symbols-rounded">receipt_long</span>
-            </div>
-            <div class="stat-card-body">
-              <div class="stat-card-label">Pending Bill</div>
-              <div class="stat-card-value" id="statBillAmount">—</div>
-              <div class="stat-card-sub" id="statBillName">No pending bills</div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- ── TOP SPENDING CATEGORIES ── -->
-      <div class="section-header">
-        <h2>Top Spending</h2>
-      </div>
-      <div class="category-chips" id="categoryChips">
-        <!-- Populated by JS -->
-      </div>
-
-      <!-- ── RECENT TRANSACTIONS ── -->
-      <div class="section-header">
-        <h2>Recent Transactions</h2>
-        <button class="see-all" onclick="navigateTo('ledger')">See All</button>
-      </div>
-      <div class="transaction-list" id="recentTransactions">
-        <!-- Populated by JS -->
-      </div>
-    </div>
-
-    <!-- ═══════════════════════════════════════════ -->
-    <!-- LEDGER (Transactions List)                  -->
-    <!-- ═══════════════════════════════════════════ -->
-    <div class="page" id="page-ledger" data-page="ledger">
-      <div class="page-header">
-        <div class="app-title">Tracko</div>
-        <div class="page-title">Ledger</div>
-      </div>
-
-      <!-- LEDGER SUMMARY BAR -->
-      <div class="ledger-summary-bar">
-        <div class="ledger-summary-item">
-          <span class="ledger-summary-label">Income</span>
-          <span class="ledger-summary-value ledger-summary-income" id="ledgerTotalIncome">$0</span>
-        </div>
-        <div class="ledger-summary-divider"></div>
-        <div class="ledger-summary-item">
-          <span class="ledger-summary-label">Expenses</span>
-          <span class="ledger-summary-value ledger-summary-expense" id="ledgerTotalExpense">$0</span>
-        </div>
-        <div class="ledger-summary-divider"></div>
-        <div class="ledger-summary-item">
-          <span class="ledger-summary-label">Balance</span>
-          <span class="ledger-summary-value" id="ledgerNetBalance">$0</span>
-        </div>
-        <div class="ledger-summary-divider"></div>
-        <div class="ledger-summary-item">
-          <span class="ledger-summary-label">Entries</span>
-          <span class="ledger-summary-value" id="ledgerTxnCount">0</span>
-        </div>
-      </div>
-
-      <!-- SEARCH + SORT ROW -->
-      <div class="ledger-controls-row">
-        <div class="search-bar ledger-search">
-          <span class="search-icon material-symbols-rounded">search</span>
-          <input type="text" class="form-input" id="searchInput"
-            placeholder="Search by name, category or note..." oninput="filterTransactions()">
-          <button class="search-clear" id="searchClear" onclick="clearSearch()" title="Clear">
-            <span class="material-symbols-rounded">close</span>
-          </button>
-        </div>
-        <div class="ledger-sort-wrap">
-          <span class="material-symbols-rounded ledger-sort-icon">sort</span>
-          <select class="ledger-sort-select" id="ledgerSort" onchange="setSort(this.value)">
-            <option value="date-desc">Newest first</option>
-            <option value="date-asc">Oldest first</option>
-            <option value="amount-desc">Highest amount</option>
-            <option value="amount-asc">Lowest amount</option>
-            <option value="name-asc">Name A to Z</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- FILTER CHIPS -->
-      <div class="filter-chips" id="filterChips">
-        <button class="filter-chip active" data-filter="all"     onclick="setFilter('all')">All</button>
-        <button class="filter-chip"        data-filter="expense" onclick="setFilter('expense')">Expenses</button>
-        <button class="filter-chip"        data-filter="income"  onclick="setFilter('income')">Income</button>
-        <button class="filter-chip"        data-filter="pending" onclick="setFilter('pending')">Pending</button>
-      </div>
-
-      <!-- MAIN CONTENT GRID -->
-      <div class="ledger-content-grid">
-        <div id="allTransactions"><!-- Populated by JS --></div>
-        <div class="ledger-sidebar-card">
-          <div class="info-card" style="margin-bottom: var(--space-4);">
-            <div class="info-icon health-icon">
-              <span class="material-symbols-rounded">analytics</span>
-            </div>
-            <div class="info-title">Portfolio Health</div>
-            <div class="info-desc" id="portfolioHealth">Analyzing...</div>
-            <div class="info-highlight" id="estimatedSavings">$0</div>
-            <div class="info-desc" style="margin-top:4px;">Net Balance</div>
-          </div>
-          <div class="ledger-cat-breakdown">
-            <div class="ledger-cat-title">By Category</div>
-            <div id="ledgerCatBreakdown"></div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- ═══════════════════════════════════════════ -->
-    <!-- INSIGHTS (Stats & Budget)                   -->
-    <!-- ═══════════════════════════════════════════ -->
-    <div class="page" id="page-insights" data-page="insights">
-      <div class="page-header">
-        <div class="app-title">Tracko</div>
-        <div class="page-title">Insights</div>
-      </div>
-
-      <!-- Budget Ring -->
-      <div class="budget-hero">
-        <div class="budget-ring-container">
-          <svg viewBox="0 0 120 120">
-            <defs>
-              <linearGradient id="budgetGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="var(--primary)" />
-                <stop offset="100%" stop-color="var(--primary-container)" />
-              </linearGradient>
-            </defs>
-            <circle class="budget-ring-track" cx="60" cy="60" r="52" />
-            <circle class="budget-ring-fill" id="budgetRingFill" cx="60" cy="60" r="52"
-              stroke-dasharray="326.73"
-              stroke-dashoffset="326.73" />
-          </svg>
-          <div class="budget-ring-text">
-            <div class="budget-ring-amount" id="budgetSpent">$0</div>
-            <div class="budget-ring-total" id="budgetTotal">of $0</div>
-          </div>
+        <!-- ── TOP SPENDING CATEGORIES ── -->
+        <div class="section-header">
+          <h2>Top Spending</h2>
         </div>
-        <div class="budget-remaining" id="budgetRemaining">
-          You have <strong>$0</strong> remaining this month.
+        <div class="category-chips" id="categoryChips">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- ── RECENT TRANSACTIONS ── -->
+        <div class="section-header">
+          <h2>Recent Transactions</h2>
+          <button class="see-all" onclick="navigateTo('ledger')">See All</button>
+        </div>
+        <div class="transaction-list" id="recentTransactions">
+          <!-- Populated by JS -->
         </div>
       </div>
 
-      <!-- Spending Breakdown -->
-      <div class="section-header">
-        <h2>Spending Breakdown</h2>
-      </div>
-      <div class="spending-bar-chart" id="spendingBreakdown">
-        <!-- Populated by JS -->
-      </div>
+      <!-- ═══════════════════════════════════════════ -->
+      <!-- LEDGER (Transactions List)                  -->
+      <!-- ═══════════════════════════════════════════ -->
+      <div class="page" id="page-ledger" data-page="ledger">
+        <div class="page-header">
+          <div class="app-title">Tracko</div>
+          <div class="page-title">Ledger</div>
+        </div>
 
-      <!-- Active Budgets -->
-      <div class="section-header">
-        <h2>Active Budgets</h2>
-      </div>
-      <div class="budget-list" id="activeBudgets">
-        <!-- Populated by JS -->
-      </div>
-    </div>
-
-    <!-- ═══════════════════════════════════════════ -->
-    <!-- STUDIO (Settings)                           -->
-    <!-- ═══════════════════════════════════════════ -->
-    <div class="page" id="page-studio" data-page="studio">
-      <div class="page-header">
-        <div class="app-title">Tracko</div>
-        <div class="page-title">Studio Settings</div>
-        <div class="page-subtitle">Refine your workspace configuration and preferences for a tailored financial experience.</div>
-      </div>
-
-      <!-- Appearance -->
-      <div class="settings-section">
-        <div class="settings-section-title">Appearance</div>
-        <div class="settings-list">
-          <div class="setting-item">
-            <div class="setting-icon accent">
-              <span class="material-symbols-rounded">dark_mode</span>
-            </div>
-            <div class="setting-info">
-              <div class="setting-name">Dark Appearance</div>
-              <div class="setting-desc">Switch between light and dark canvas</div>
-            </div>
-            <label class="toggle">
-              <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
-              <span class="toggle-slider"></span>
-            </label>
+        <!-- LEDGER SUMMARY BAR -->
+        <div class="ledger-summary-bar">
+          <div class="ledger-summary-item">
+            <span class="ledger-summary-label">Income</span>
+            <span class="ledger-summary-value ledger-summary-income" id="ledgerTotalIncome">$0</span>
           </div>
-          <div class="setting-item">
-            <div class="setting-icon accent">
-              <span class="material-symbols-rounded">language</span>
-            </div>
-            <div class="setting-info">
-              <div class="setting-name">Currency</div>
-              <div class="setting-desc">Select your preferred currency</div>
-            </div>
-            <select class="setting-select" id="currencySelect" onchange="setCurrency(this.value)">
-              <option value="USD">USD $</option>
-              <option value="EUR">EUR €</option>
-              <option value="GBP">GBP £</option>
-              <option value="INR">INR ₹</option>
-              <option value="JPY">JPY ¥</option>
+          <div class="ledger-summary-divider"></div>
+          <div class="ledger-summary-item">
+            <span class="ledger-summary-label">Expenses</span>
+            <span class="ledger-summary-value ledger-summary-expense" id="ledgerTotalExpense">$0</span>
+          </div>
+          <div class="ledger-summary-divider"></div>
+          <div class="ledger-summary-item">
+            <span class="ledger-summary-label">Balance</span>
+            <span class="ledger-summary-value" id="ledgerNetBalance">$0</span>
+          </div>
+          <div class="ledger-summary-divider"></div>
+          <div class="ledger-summary-item">
+            <span class="ledger-summary-label">Entries</span>
+            <span class="ledger-summary-value" id="ledgerTxnCount">0</span>
+          </div>
+        </div>
+
+        <!-- SEARCH + SORT ROW -->
+        <div class="ledger-controls-row">
+          <div class="search-bar ledger-search">
+            <span class="search-icon material-symbols-rounded">search</span>
+            <input type="text" class="form-input" id="searchInput" placeholder="Search by name, category or note..."
+              oninput="filterTransactions()">
+            <button class="search-clear" id="searchClear" onclick="clearSearch()" title="Clear">
+              <span class="material-symbols-rounded">close</span>
+            </button>
+          </div>
+          <div class="ledger-sort-wrap">
+            <span class="material-symbols-rounded ledger-sort-icon">sort</span>
+            <select class="ledger-sort-select" id="ledgerSort" onchange="setSort(this.value)">
+              <option value="date-desc">Newest first</option>
+              <option value="date-asc">Oldest first</option>
+              <option value="amount-desc">Highest amount</option>
+              <option value="amount-asc">Lowest amount</option>
+              <option value="name-asc">Name A to Z</option>
             </select>
           </div>
         </div>
-      </div>
 
-      <!-- Notifications -->
-      <div class="settings-section">
-        <div class="settings-section-title">Notifications</div>
-        <div class="settings-list">
-          <div class="setting-item">
-            <div class="setting-icon">
-              <span class="material-symbols-rounded">notifications</span>
+        <!-- FILTER CHIPS -->
+        <div class="filter-chips" id="filterChips">
+          <button class="filter-chip active" data-filter="all" onclick="setFilter('all')">All</button>
+          <button class="filter-chip" data-filter="expense" onclick="setFilter('expense')">Expenses</button>
+          <button class="filter-chip" data-filter="income" onclick="setFilter('income')">Income</button>
+          <button class="filter-chip" data-filter="pending" onclick="setFilter('pending')">Pending</button>
+        </div>
+
+        <!-- MAIN CONTENT GRID -->
+        <div class="ledger-content-grid">
+          <div id="allTransactions"><!-- Populated by JS --></div>
+          <div class="ledger-sidebar-card">
+            <div class="info-card" style="margin-bottom: var(--space-4);">
+              <div class="info-icon health-icon">
+                <span class="material-symbols-rounded">analytics</span>
+              </div>
+              <div class="info-title">Portfolio Health</div>
+              <div class="info-desc" id="portfolioHealth">Analyzing...</div>
+              <div class="info-highlight" id="estimatedSavings">$0</div>
+              <div class="info-desc" style="margin-top:4px;">Net Balance</div>
             </div>
-            <div class="setting-info">
-              <div class="setting-name">Spending Alerts</div>
-              <div class="setting-desc">Notify when nearing budget limits</div>
+            <div class="ledger-cat-breakdown">
+              <div class="ledger-cat-title">By Category</div>
+              <div id="ledgerCatBreakdown"></div>
             </div>
-            <label class="toggle">
-              <input type="checkbox" id="alertsToggle" onchange="toggleAlerts()">
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-          <div class="setting-item">
-            <div class="setting-icon">
-              <span class="material-symbols-rounded">fingerprint</span>
-            </div>
-            <div class="setting-info">
-              <div class="setting-name">Biometric Lock</div>
-              <div class="setting-desc">Secure access with Touch or Face ID</div>
-            </div>
-            <label class="toggle">
-              <input type="checkbox" id="biometricToggle">
-              <span class="toggle-slider"></span>
-            </label>
           </div>
         </div>
       </div>
 
-      <!-- Budget Configuration -->
-      <div class="settings-section">
-        <div class="settings-section-title">Budget</div>
-        <div class="settings-list">
-          <div class="setting-item" onclick="openBudgetSetting()">
-            <div class="setting-icon accent">
-              <span class="material-symbols-rounded">account_balance_wallet</span>
+      <!-- ═══════════════════════════════════════════ -->
+      <!-- INSIGHTS (Stats & Budget)                   -->
+      <!-- ═══════════════════════════════════════════ -->
+      <div class="page" id="page-insights" data-page="insights">
+        <div class="page-header">
+          <div class="app-title">Tracko</div>
+          <div class="page-title">Insights</div>
+          <div class="page-subtitle" id="budgetRemaining">You have $0 remaining this month.</div>
+        </div>
+
+        <!-- Custom Budget Ring -->
+        <div class="budget-hero">
+          <div class="budget-ring-container">
+            <svg viewBox="0 0 120 120">
+              <defs>
+                <linearGradient id="budgetGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#FF512F" />
+                  <stop offset="100%" stop-color="#DD2476" />
+                </linearGradient>
+              </defs>
+              <circle class="budget-ring-track" cx="60" cy="60" r="52" />
+              <circle class="budget-ring-fill" id="budgetRingFill" cx="60" cy="60" r="52" stroke="url(#budgetGradient)" stroke-dasharray="326.73" stroke-dashoffset="326.73" />
+            </svg>
+            <div class="budget-ring-text">
+              <div class="budget-ring-tag">Spent</div>
+              <div class="budget-ring-amount" id="budgetSpent">$0</div>
+              <div class="budget-ring-total" id="budgetTotal">of $0</div>
             </div>
-            <div class="setting-info">
-              <div class="setting-name">Monthly Budget</div>
-              <div class="setting-desc" id="budgetSettingDesc">Set your monthly spending limit</div>
-            </div>
-            <span class="material-symbols-rounded" style="color: var(--on-surface-variant); font-size: 1.25rem;">chevron_right</span>
+          </div>
+          <div class="budget-remaining" id="budgetRemaining">
+            You have <strong>$0</strong> remaining this month.
+          </div>
+        </div>
+
+        <!-- Category Breakdown Grid -->
+        <div class="section-header">
+          <h2>Category Breakdown</h2>
+        </div>
+        <div class="chart-card">
+          <div class="chart-container" style="position: relative; height: 320px; width: 100%;">
+            <canvas id="categoryChart"></canvas>
           </div>
         </div>
       </div>
 
-      <!-- Danger Zone -->
-      <div class="settings-section">
-        <div class="settings-section-title">Danger Zone</div>
-        <div class="settings-list">
-          <div class="setting-item" onclick="confirmResetData()">
-            <div class="setting-icon danger">
-              <span class="material-symbols-rounded">delete_forever</span>
+      <!-- ═══════════════════════════════════════════ -->
+      <!-- STUDIO (Settings)                           -->
+      <!-- ═══════════════════════════════════════════ -->
+      <div class="page" id="page-studio" data-page="studio">
+        <div class="page-header">
+          <div class="app-title">Tracko</div>
+          <div class="page-title">Studio Settings</div>
+          <div class="page-subtitle">Refine your workspace configuration and preferences for a tailored financial
+            experience.</div>
+        </div>
+
+        <!-- Appearance -->
+        <div class="settings-section">
+          <div class="settings-section-title">Appearance</div>
+          <div class="settings-list">
+            <div class="setting-item">
+              <div class="setting-icon accent">
+                <span class="material-symbols-rounded">dark_mode</span>
+              </div>
+              <div class="setting-info">
+                <div class="setting-name">Dark Appearance</div>
+                <div class="setting-desc">Switch between light and dark canvas</div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
+                <span class="toggle-slider"></span>
+              </label>
             </div>
-            <div class="setting-info">
-              <div class="setting-name">Reset Data</div>
-              <div class="setting-desc">Permanently wipe all ledger entries</div>
+            <div class="setting-item">
+              <div class="setting-icon accent">
+                <span class="material-symbols-rounded">language</span>
+              </div>
+              <div class="setting-info">
+                <div class="setting-name">Currency</div>
+                <div class="setting-desc">Select your preferred currency</div>
+              </div>
+              <select class="setting-select" id="currencySelect" onchange="setCurrency(this.value)">
+                <option value="USD">USD $</option>
+                <option value="EUR">EUR €</option>
+                <option value="GBP">GBP £</option>
+                <option value="INR">INR ₹</option>
+                <option value="JPY">JPY ¥</option>
+              </select>
             </div>
-            <span class="material-symbols-rounded" style="color: var(--on-surface-variant); font-size: 1.25rem;">chevron_right</span>
+          </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="settings-section">
+          <div class="settings-section-title">Notifications</div>
+          <div class="settings-list">
+            <div class="setting-item">
+              <div class="setting-icon">
+                <span class="material-symbols-rounded">notifications</span>
+              </div>
+              <div class="setting-info">
+                <div class="setting-name">Spending Alerts</div>
+                <div class="setting-desc">Notify when nearing budget limits</div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" id="alertsToggle" onchange="toggleAlerts()">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="setting-item">
+              <div class="setting-icon">
+                <span class="material-symbols-rounded">fingerprint</span>
+              </div>
+              <div class="setting-info">
+                <div class="setting-name">Biometric Lock</div>
+                <div class="setting-desc">Secure access with Touch or Face ID</div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" id="biometricToggle">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Budget Configuration -->
+        <div class="settings-section">
+          <div class="settings-section-title">Budget</div>
+          <div class="settings-list">
+            <div class="setting-item" onclick="openBudgetSetting()">
+              <div class="setting-icon accent">
+                <span class="material-symbols-rounded">account_balance_wallet</span>
+              </div>
+              <div class="setting-info">
+                <div class="setting-name">Monthly Budget</div>
+                <div class="setting-desc" id="budgetSettingDesc">Set your monthly spending limit</div>
+              </div>
+              <span class="material-symbols-rounded"
+                style="color: var(--on-surface-variant); font-size: 1.25rem;">chevron_right</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="settings-section">
+          <div class="settings-section-title">Danger Zone</div>
+          <div class="settings-list">
+            <div class="setting-item" onclick="confirmResetData()">
+              <div class="setting-icon danger">
+                <span class="material-symbols-rounded">delete_forever</span>
+              </div>
+              <div class="setting-info">
+                <div class="setting-name">Reset Data</div>
+                <div class="setting-desc">Permanently wipe all ledger entries</div>
+              </div>
+              <span class="material-symbols-rounded"
+                style="color: var(--on-surface-variant); font-size: 1.25rem;">chevron_right</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
     </div><!-- /.main-content -->
 
@@ -448,7 +451,7 @@
     <nav class="bottom-nav" id="bottomNav">
       <button class="nav-item active" data-page="home" onclick="navigateTo('home')">
         <span class="nav-icon material-symbols-rounded">dashboard</span>
-        <span>Atelier</span>
+        <span>Home</span>
       </button>
       <button class="nav-item" data-page="ledger" onclick="navigateTo('ledger')">
         <span class="nav-icon material-symbols-rounded">receipt_long</span>
@@ -482,8 +485,10 @@
           <div class="form-group">
             <label class="form-label">Type</label>
             <div class="type-toggle">
-              <button type="button" class="type-toggle-btn active" data-type="expense" onclick="setExpenseType('expense')">Expense</button>
-              <button type="button" class="type-toggle-btn" data-type="income" onclick="setExpenseType('income')">Income</button>
+              <button type="button" class="type-toggle-btn active" data-type="expense"
+                onclick="setExpenseType('expense')">Expense</button>
+              <button type="button" class="type-toggle-btn" data-type="income"
+                onclick="setExpenseType('income')">Income</button>
             </div>
           </div>
 
@@ -492,7 +497,8 @@
             <label class="form-label">Amount</label>
             <div class="amount-input-wrapper">
               <span class="currency-prefix" id="currencyPrefix">$</span>
-              <input type="number" class="form-input" id="expenseAmount" placeholder="0.00" step="0.01" min="0.01" required>
+              <input type="number" class="form-input" id="expenseAmount" placeholder="0.00" step="0.01" min="0.01"
+                required>
             </div>
           </div>
 
@@ -548,7 +554,7 @@
             <span class="material-symbols-rounded">close</span>
           </button>
         </div>
-        <form onsubmit="saveBudget(event)">
+        <form id="budgetForm" onsubmit="saveBudget(event)">
           <div class="form-group">
             <label class="form-label">Total Monthly Budget</label>
             <div class="amount-input-wrapper">
@@ -567,7 +573,8 @@
     <div class="confirm-dialog" id="confirmDialog">
       <div class="confirm-box">
         <div class="confirm-title">Reset All Data?</div>
-        <div class="confirm-desc">This will permanently delete all your transactions and settings. This action cannot be undone.</div>
+        <div class="confirm-desc">This will permanently delete all your transactions and settings. This action cannot be
+          undone.</div>
         <div class="confirm-actions">
           <button class="confirm-cancel" onclick="closeConfirmDialog()">Cancel</button>
           <button class="confirm-ok" onclick="resetAllData()">Reset</button>
@@ -582,4 +589,5 @@
 
   <script src="app.js"></script>
 </body>
+
 </html>
