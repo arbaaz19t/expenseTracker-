@@ -999,4 +999,15 @@ document.addEventListener('DOMContentLoaded', function() {
   init();
   handleHashChange();
   renderModernCalendar(); // draw current date strip on load
+  registerServiceWorker();
 });
+
+function registerServiceWorker() {
+  if (!('serviceWorker' in navigator)) return;
+
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('./service-worker.js').catch(function(err) {
+      console.warn('Service worker registration failed:', err);
+    });
+  });
+}
